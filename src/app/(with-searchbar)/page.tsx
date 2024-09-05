@@ -3,6 +3,12 @@ import style from "./page.module.css";
 import books from "@/mock/books.json";
 import { BookData } from "@/types";
 
+//* # 데이터 캐시
+//* fetch 메서드를 활용해 불러온 데이터를 Next서버에 보관하는 기능
+//* await fetch(”~/api”,{cache: “no-store”}) 요청 결과를 캐싱하지 않음 (기본값)
+//* await fetch(”~/api”, {cache: “force-cache”}) 요청 결과를 무조건 캐싱
+//* await fetch(”~/api”, {next: {revalidate: 3}}) 3초 마다 재검증(갱신)
+//* await  fetch(”~/api”, {next: {tags: [’a’]}) 요청이 들어왔을 때 데이터를 최신화(On-Demand Revalidate)
 const AllBooks = async () => {
   const response = await fetch(
     `${process.env.NEXT_PUBLIC_API_SERVER_URL}/book`,
