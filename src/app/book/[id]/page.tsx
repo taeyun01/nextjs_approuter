@@ -3,7 +3,7 @@ import style from "./page.module.css";
 import { BookData } from "@/types";
 
 //? dynamicParams를 false로 설정하면 아래 설정한 generateStaticParams()에 명시하지 않는 id파라미터들은 다 404페이지로 리다이렉트 된다.
-export const dynamicParams = false; // 기본값은 true
+// export const dynamicParams = false; // 기본값은 true
 
 //* bool/1, bool/2, bool/3 페이지들은 스태틱 페이지로써 빌드타임에 만들게 된다. (페이지 라우터의 getStaticPaths()와 같은 역할을 한다.)
 //* 1, 2, 3번의 id도서는 풀 라우터 캐시에 보관이 되어 굉장히 빠른 속도로 스태틱 페이지가 반환됨

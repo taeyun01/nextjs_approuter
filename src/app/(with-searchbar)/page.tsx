@@ -3,18 +3,23 @@ import style from "./page.module.css";
 import books from "@/mock/books.json";
 import { BookData } from "@/types";
 
-//* # 데이터 캐시
+//* 특정 페이지의 유형을 강제로 Static , Dynamic 페이지로 설정
+//* 1. auto : 기본값, 아무것도 강제하지 않음
+//* 2. force-dynamic : 페이지를 강제로 다이나믹 페이지로 설정
+//* 3. force-static : 페이지를 강제로 스태틱 페이지로 설정
+//* 4. error : 페이지를 강제로 스태틱 페이지로 설정 (설정하면 안되는 페이지일 경우 -> 빌드오류(왜 안되는지 이유 써있음))
+// export const dynamic = "force-dynamic"; //? 정말 필요하거나 특별한 상황 아니면 권장되지 않음.
+
+//* 데이터 캐시
 //* fetch 메서드를 활용해 불러온 데이터를 Next서버에 보관하는 기능
-//* await fetch(”~/api”,{cache: “no-store”}) 요청 결과를 캐싱하지 않음 (기본값)
-//* await fetch(”~/api”, {cache: “force-cache”}) 요청 결과를 무조건 캐싱
-//* await fetch(”~/api”, {next: {revalidate: 3}}) 3초 마다 재검증(갱신)
-//* await  fetch(”~/api”, {next: {tags: [’a’]}) 요청이 들어왔을 때 데이터를 최신화(On-Demand Revalidate)
 const AllBooks = async () => {
   const response = await fetch(
     `${process.env.NEXT_PUBLIC_API_SERVER_URL}/book`,
     {
-      // cache: "no-store", // 요청 결과를 캐싱 하지않음. 안써도됨 기본값임
-      cache: "force-cache",
+      // cache: "no-store", // 요청 결과를 캐싱하지 않음. (기본값)
+      cache: "force-cache", // 요청 결과를 무조건 캐싱
+      // next: { revalidate: 3 }, // 3초 마다 재검증(갱신)
+      // next: { tags: ["a"] }, // 요청이 들어왔을 때 데이터를 최신화(On-Demand Revalidate)
     }
   );
   // 예외처리
