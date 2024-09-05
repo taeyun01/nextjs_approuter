@@ -13,14 +13,15 @@ const AllBooks = async () => {
   const response = await fetch(
     `${process.env.NEXT_PUBLIC_API_SERVER_URL}/book`,
     {
-      cache: "no-store", // 요청 결과를 캐싱 하지않음. 안써도됨 기본값임
+      // cache: "no-store", // 요청 결과를 캐싱 하지않음. 안써도됨 기본값임
+      cache: "force-cache",
     }
   );
   // 예외처리
   if (!response.ok) return <div>오류가 발생했습니다...</div>;
 
   const allBooks: BookData[] = await response.json();
-  console.log(allBooks);
+  // console.log(allBooks);
 
   return (
     <div>
@@ -37,14 +38,13 @@ const RecoBooks = async () => {
     {
       // cache: "force-cache", // 요청된 결과 무조건 캐싱, (이제 랜덤하게 불러오지 않음)
       next: {
-        revalidate: 3, // 3초 마다 재검증(갱신)
+        revalidate: 3, // 3초 마다 재검증(갱신), revalidate는 페이지를 다이나믹하게 설정하는 옵션은 아니기 떄문에 놔둔다.
       },
     }
   );
   if (!response.ok) return <div>오류가 발생했습니다...</div>;
 
   const recoBooks: BookData[] = await response.json();
-  console.log(recoBooks);
 
   return (
     <div>
