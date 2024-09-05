@@ -14,7 +14,7 @@ const Footer = async () => {
       cache: "force-cache", //? 도서를 추가하거나 수정하는 작업은 없으니까 강제로 캐싱되도록 설정해도 기능상 문제는 없다.
     }
   );
-  if (!response.ok) return <footer>제작 @taeyun</footer>;
+  if (!response.ok) return <footer>제작 @taeyun yoo</footer>;
   const books: BookData[] = await response.json();
   const bookCount = books.length;
   return (
@@ -35,7 +35,7 @@ export default function RootLayout({
       <body>
         <div className={style.container}>
           <header>
-            <Link href={"/"}>📚 ONEBITE BOOKS</Link>
+            <Link href={"/"}>📚 개발자 도서 추천</Link>
           </header>
           <main>{children}</main>
           <Footer />
