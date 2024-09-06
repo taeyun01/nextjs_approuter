@@ -1,3 +1,4 @@
+import BookListSkeleton from "@/components/\bskeleton/book-list-skeleton";
 import BookItem from "@/components/book-item";
 import { BookData } from "@/types";
 import { delay } from "@/util/delay";
@@ -41,7 +42,7 @@ export default function Page({
     // key값이 변경되면 서스펜스 스트리밍이 시작된다.(검색어가 변경되면 시작.)
     <Suspense
       key={searchParams.q || ""}
-      fallback={<div>서스펜스 스트리밍 로딩중...</div>}
+      fallback={<BookListSkeleton count={3} />}
     >
       <SearchResult q={searchParams.q || ""} />
     </Suspense>

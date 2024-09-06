@@ -4,6 +4,8 @@ import books from "@/mock/books.json";
 import { BookData } from "@/types";
 import { delay } from "@/util/delay";
 import { Suspense } from "react";
+import BookItemSkeleton from "@/components/\bskeleton/book-item-skeleton";
+import BookListSkeleton from "@/components/\bskeleton/book-list-skeleton";
 
 //* 특정 페이지의 유형을 강제로 Static , Dynamic 페이지로 설정
 //* 1. auto : 기본값, 아무것도 강제하지 않음
@@ -76,13 +78,13 @@ export default function Home() {
         {/* //? 이렇게 서스펜스 컴포넌트를 활용하면 병렬로 하나의 페이지 내에서 여러개의 컴포넌트들을 완료되는 순서대로 화면에 각각 렌더링 시킬 수 있다 
             //? loding.tsx파일을 이용하기 보다는 대부분 서스펜스 컴포넌트를 사용하는게 선호가 되고 많은곳에 범용적으로 활용할 수 있다.
         */}
-        <Suspense fallback={<div>도서를 불러오는 중입니다...</div>}>
+        <Suspense fallback={<BookListSkeleton count={3} />}>
           <RecoBooks />
         </Suspense>
       </section>
       <section>
         <h3>등록된 모든 도서</h3>
-        <Suspense fallback={<div>도서를 불러오는 중입니다...</div>}>
+        <Suspense fallback={<BookListSkeleton count={10} />}>
           <AllBooks />
         </Suspense>
       </section>
