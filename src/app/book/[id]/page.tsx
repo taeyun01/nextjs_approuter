@@ -14,15 +14,9 @@ export const generateStaticParams = async () => {
   return [{ id: "1" }, { id: "2" }, { id: "3" }];
 };
 
-//* id의 url파라미터를 받는 동적경로에 대응하는 페이지는 다이나믹 페이지로 설정된다.
-//* 어떠한 id의 파라미터가 들어올 지 모르기 때문에 기본값으론 다이나믹 페이지로 설정된다.
-export default async function Page({
-  params,
-}: {
-  params: { id: string | string[] };
-}) {
+const BookDetail = async ({ bookId }: { bookId: string }) => {
   const response = await fetch(
-    `${process.env.NEXT_PUBLIC_API_SERVER_URL}/book/${params.id}`
+    `${process.env.NEXT_PUBLIC_API_SERVER_URL}/book/${bookId}`
   );
 
   if (!response.ok) {
@@ -38,7 +32,7 @@ export default async function Page({
     book;
 
   return (
-    <div className={style.container}>
+    <section>
       <div
         className={style.cover_img_container}
         style={{ backgroundImage: `url('${coverImgUrl}')` }}
@@ -51,6 +45,45 @@ export default async function Page({
         {author} | {publisher}
       </div>
       <div className={style.description}>{description}</div>
+    </section>
+  );
+};
+
+//* 서버액션 왜 씀??
+//*  우선 코드가 매우 간결함, API를 이용해 이런 기능을 만드려면 별로의 파일을 추가하고 경로를 설정하고 예외처리를 해줘야하는 부가적인 작업들이 매번하기에는 귀찮다.
+//* 단순한 기능만 할 경우에는 서버액션을 써서 보다 간결하게 함수 하나만으로도 API역할을 충실히 할 수 있다.
+//* 그리고 오직 서버측에서만 실행되기 때문에 클라이언트인 브라우저에서는 호출만 할 수 있을 뿐 이 코드를 전달 받지는 않는다.
+//* 보안상으로 민감하거나 중요한 데이터를 다룰때 유용하게 활용될 수 있다.
+//? 즉, 서버액션의 목적은 조금 더 간결하고 조금 더 편리하게 서버측에서 실행되는 동작을 정의하는 데에 있다.
+
+const ReviewEditor = () => {
+  const createReviewAction = async (formData: FormData) => {
+    "use server"; // 서버액션 설정
+    // console.log("서버액션!!");
+    // console.log(formData);
+    const content = formData.get("content")?.toString();
+    const author = formData.get("author")?.toString();
+    console.log(content, author);
+  };
+
+  return (
+    <section>
+      <form action={createReviewAction}>
+        <input name="content" placeholder="리뷰내용" />
+        <input name="author" placeholder="작성자" />
+        <button type="submit">작성하기</button>
+      </form>
+    </section>
+  );
+};
+
+//* id의 url파라미터를 받는 동적경로에 대응하는 페이지는 다이나믹 페이지로 설정된다.
+//* 어떠한 id의 파라미터가 들어올 지 모르기 때문에 기본값으론 다이나믹 페이지로 설정된다.
+export default async function Page({ params }: { params: { id: string } }) {
+  return (
+    <div className={style.container}>
+      <BookDetail bookId={params.id} />
+      <ReviewEditor />
     </div>
   );
 }
