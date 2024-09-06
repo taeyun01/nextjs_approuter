@@ -1,5 +1,6 @@
 import BookItem from "@/components/book-item";
 import { BookData } from "@/types";
+import { delay } from "@/util/delay";
 
 //* 검색 페이지는 searchParams라는 쿼리스트링을 보관하는 이러한 Props를 받고 있다. 동적함수를 사용하고 있기때문에 다이나믹 페이지로 설정돼있다.
 //* 스태틱 페이지로 설정하려면 동적함수를 사용하지 못하도록 해야하는데 그러면 쿼리스트링을 사용하지 못하니 그렇게 할 수는 없다.
@@ -12,6 +13,7 @@ export default async function Page({
     q?: string;
   };
 }) {
+  await delay(2000);
   const response = await fetch(
     `${process.env.NEXT_PUBLIC_API_SERVER_URL}/book/search?q=${searchParams.q}`,
     {
