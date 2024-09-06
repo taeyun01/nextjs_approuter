@@ -2,6 +2,8 @@ import BookItem from "@/components/book-item";
 import style from "./page.module.css";
 import books from "@/mock/books.json";
 import { BookData } from "@/types";
+import { delay } from "@/util/delay";
+import { Suspense } from "react";
 
 //* 특정 페이지의 유형을 강제로 Static , Dynamic 페이지로 설정
 //* 1. auto : 기본값, 아무것도 강제하지 않음
@@ -13,6 +15,7 @@ import { BookData } from "@/types";
 //* 데이터 캐시
 //* fetch 메서드를 활용해 불러온 데이터를 Next서버에 보관하는 기능
 const AllBooks = async () => {
+  await delay(1500);
   const response = await fetch(
     `${process.env.NEXT_PUBLIC_API_SERVER_URL}/book`,
     {
@@ -38,6 +41,7 @@ const AllBooks = async () => {
 };
 
 const RecoBooks = async () => {
+  await delay(3000);
   const response = await fetch(
     `${process.env.NEXT_PUBLIC_API_SERVER_URL}/book/random`,
     {
@@ -60,16 +64,27 @@ const RecoBooks = async () => {
   );
 };
 
+//? 서스펜스 스트리밍의 진가를 알아보자!
+//? 우선 스트리밍을 적용시키기 위해서는 다이나믹 페이지로 바꿔줘야한다.
+const dynamic = "force-dynamic"; // 해당 index페이지는 강제로 다이나믹 페이지로 변경됨
+
 export default function Home() {
   return (
     <div className={style.container}>
       <section>
         <h3>지금 추천하는 도서</h3>
-        <RecoBooks />
+        {/* //? 이렇게 서스펜스 컴포넌트를 활용하면 병렬로 하나의 페이지 내에서 여러개의 컴포넌트들을 완료되는 순서대로 화면에 각각 렌더링 시킬 수 있다 
+            //? loding.tsx파일을 이용하기 보다는 대부분 서스펜스 컴포넌트를 사용하는게 선호가 되고 많은곳에 범용적으로 활용할 수 있다.
+        */}
+        <Suspense fallback={<div>도서를 불러오는 중입니다...</div>}>
+          <RecoBooks />
+        </Suspense>
       </section>
       <section>
         <h3>등록된 모든 도서</h3>
-        <AllBooks />
+        <Suspense fallback={<div>도서를 불러오는 중입니다...</div>}>
+          <AllBooks />
+        </Suspense>
       </section>
     </div>
   );
