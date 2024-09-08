@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
 import style from "./page.module.css";
 import { BookData } from "@/types";
+import { createReviewAction } from "@/actions/create-review.action";
 
 //? dynamicParams를 false로 설정하면 아래 설정한 generateStaticParams()에 명시하지 않는 id파라미터들은 다 404페이지로 리다이렉트 된다.
 // export const dynamicParams = false; // 기본값은 true
@@ -56,21 +57,14 @@ const BookDetail = async ({ bookId }: { bookId: string }) => {
 //* 보안상으로 민감하거나 중요한 데이터를 다룰때 유용하게 활용될 수 있다.
 //? 즉, 서버액션의 목적은 조금 더 간결하고 조금 더 편리하게 서버측에서 실행되는 동작을 정의하는 데에 있다.
 
-const ReviewEditor = () => {
-  const createReviewAction = async (formData: FormData) => {
-    "use server"; // 서버액션 설정
-    // console.log("서버액션!!");
-    // console.log(formData);
-    const content = formData.get("content")?.toString();
-    const author = formData.get("author")?.toString();
-    console.log(content, author);
-  };
-
+const ReviewEditor = ({ bookId }: { bookId: string }) => {
   return (
     <section>
       <form action={createReviewAction}>
-        <input name="content" placeholder="리뷰내용" />
-        <input name="author" placeholder="작성자" />
+        {/* bookId를 전달하고 싶을 때 사용할 수 있는 트릭 hidden추가 */}
+        <input name="bookId" value={bookId} type="text" hidden />
+        <input name="content" placeholder="리뷰내용" type="text" required />
+        <input name="author" placeholder="작성자" type="text" required />
         <button type="submit">작성하기</button>
       </form>
     </section>
@@ -83,7 +77,7 @@ export default async function Page({ params }: { params: { id: string } }) {
   return (
     <div className={style.container}>
       <BookDetail bookId={params.id} />
-      <ReviewEditor />
+      <ReviewEditor bookId={params.id} />
     </div>
   );
 }
