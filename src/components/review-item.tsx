@@ -1,7 +1,14 @@
 import { ReviewData } from "@/types";
 import style from "./review-item.module.css";
+import ReviewItemDeleteButton from "./review-item-delete-button";
 
-export const ReviewItem = ({ id, author, content, createdAt }: ReviewData) => {
+export const ReviewItem = ({
+  id,
+  author,
+  content,
+  createdAt,
+  bookId,
+}: ReviewData) => {
   return (
     <div className={style.container}>
       <div className={style.author}>{author}</div>
@@ -10,7 +17,9 @@ export const ReviewItem = ({ id, author, content, createdAt }: ReviewData) => {
         <div className={style.date}>
           {new Date(createdAt).toLocaleDateString()}
         </div>
-        <div className={style.delete_btn}>삭제하기</div>
+        <div className={style.delete_btn}>
+          <ReviewItemDeleteButton reviewId={id} bookId={bookId} />
+        </div>
       </div>
     </div>
   );
