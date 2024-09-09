@@ -1,21 +1,26 @@
 "use server";
 
+import { delay } from "@/util/delay";
 import { revalidatePath, revalidateTag } from "next/cache";
 
 // 서버액션을 통해 리뷰 추가하기
-export const createReviewAction = async (formData: FormData) => {
+export const createReviewAction = async (_: any, formData: FormData) => {
   //* 컴포넌트의 Props로 부터 bookId값을 전달 받을 수 없기 때문에 formData통해서 함께 전달 받도록 한다.
   const bookId = formData.get("bookId")?.toString();
   const content = formData.get("content")?.toString();
   const author = formData.get("author")?.toString();
 
   if (!bookId || !content || !author) {
-    return;
+    return {
+      status: "error",
+      error: "리뷰 내용과 작성자를 입력해주세요",
+    };
   }
 
   try {
+    await delay(2000);
     const response = await fetch(
-      `${process.env.NEXT_PUBLIC_API_SERVER_URL}/review`,
+      `${process.env.NEXT_PUBLIC_API_SERVER_URL}/review/1`,
       {
         method: "POST",
         headers: {
@@ -27,10 +32,19 @@ export const createReviewAction = async (formData: FormData) => {
     //* 리뷰 액션이 성공적으로 완료되면 그때 리뷰 목록을 서버측에서 다시 한번 페이지를 렌더링 해주자
     console.log(response.status);
     // revalidatePath(`/book/${bookId}`); // next서버측에 해당 경로에 해당하는 페이지를 다시 생성할 것을 요청하는 (재검증을 요청하는) 그런 함수(메서드)이다.
+
+    //* 서버 액션이 실패하면 에러 핸들링 처리 useActionState의 state값으로 들어감
+    if (!response.ok)
+      throw new Error(
+        `서버 액션이 실패할 시 에러핸들링 ${response.statusText}`
+      );
+
     revalidateTag(`review-${bookId}`); // 오직 이 태그값을 갖고있는 fetch메서드의 데이터 캐시만 삭제되어 위 방식보다 효율적임
   } catch (error) {
-    console.log(error);
-    return;
+    return {
+      status: false,
+      error: `리뷰 작성에 실패했습니다 : ${error}`,
+    };
   }
 };
 
