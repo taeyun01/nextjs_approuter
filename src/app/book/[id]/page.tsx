@@ -1,7 +1,8 @@
 import { notFound } from "next/navigation";
 import style from "./page.module.css";
-import { BookData } from "@/types";
-import { createReviewAction } from "@/actions/create-review.action";
+import { BookData, ReviewData } from "@/types";
+import ReviewItem from "@/components/review-item";
+import ReviewEditor from "@/components/review-editor";
 
 //? dynamicParams를 false로 설정하면 아래 설정한 generateStaticParams()에 명시하지 않는 id파라미터들은 다 404페이지로 리다이렉트 된다.
 // export const dynamicParams = false; // 기본값은 true
@@ -57,16 +58,25 @@ const BookDetail = async ({ bookId }: { bookId: string }) => {
 //* 보안상으로 민감하거나 중요한 데이터를 다룰때 유용하게 활용될 수 있다.
 //? 즉, 서버액션의 목적은 조금 더 간결하고 조금 더 편리하게 서버측에서 실행되는 동작을 정의하는 데에 있다.
 
-const ReviewEditor = ({ bookId }: { bookId: string }) => {
+const ReviewList = async ({ bookId }: { bookId: string }) => {
+  const response = await fetch(
+    `${process.env.NEXT_PUBLIC_API_SERVER_URL}/review/book/${bookId}`
+  );
+
+  // api요청 실패 시 오류메세지와 함께 error.tsx파일이 에러를 처리해주게됨
+  if (!response.ok) {
+    throw new Error(
+      `리뷰를 불러오는데 오류가 발생했습니다. ${response.statusText}`
+    );
+  }
+
+  const reviews: ReviewData[] = await response.json();
+
   return (
     <section>
-      <form action={createReviewAction}>
-        {/* bookId를 전달하고 싶을 때 사용할 수 있는 트릭 hidden추가 */}
-        <input name="bookId" value={bookId} type="text" hidden />
-        <input name="content" placeholder="리뷰내용" type="text" required />
-        <input name="author" placeholder="작성자" type="text" required />
-        <button type="submit">작성하기</button>
-      </form>
+      {reviews.map((review) => (
+        <ReviewItem key={`review-item-${review.id}`} {...review} />
+      ))}
     </section>
   );
 };
@@ -78,6 +88,7 @@ export default async function Page({ params }: { params: { id: string } }) {
     <div className={style.container}>
       <BookDetail bookId={params.id} />
       <ReviewEditor bookId={params.id} />
+      <ReviewList bookId={params.id} />
     </div>
   );
 }
