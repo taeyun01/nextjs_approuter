@@ -60,7 +60,12 @@ const BookDetail = async ({ bookId }: { bookId: string }) => {
 
 const ReviewList = async ({ bookId }: { bookId: string }) => {
   const response = await fetch(
-    `${process.env.NEXT_PUBLIC_API_SERVER_URL}/review/book/${bookId}`
+    `${process.env.NEXT_PUBLIC_API_SERVER_URL}/review/book/${bookId}`,
+    {
+      next: {
+        tags: [`review-${bookId}`],
+      },
+    }
   );
 
   // api요청 실패 시 오류메세지와 함께 error.tsx파일이 에러를 처리해주게됨
