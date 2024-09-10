@@ -3,6 +3,7 @@ import style from "./page.module.css";
 import { BookData, ReviewData } from "@/types";
 import ReviewItem from "@/components/review-item";
 import ReviewEditor from "@/components/review-editor";
+import Image from "next/image";
 
 //? dynamicParams를 false로 설정하면 아래 설정한 generateStaticParams()에 명시하지 않는 id파라미터들은 다 404페이지로 리다이렉트 된다.
 // export const dynamicParams = false; // 기본값은 true
@@ -39,7 +40,13 @@ const BookDetail = async ({ bookId }: { bookId: string }) => {
         className={style.cover_img_container}
         style={{ backgroundImage: `url('${coverImgUrl}')` }}
       >
-        <img src={coverImgUrl} />
+        {/* <img src={coverImgUrl} /> */}
+        <Image
+          src={coverImgUrl}
+          width={240}
+          height={300}
+          alt={`도서 ${title}의 이미지`}
+        />
       </div>
       <div className={style.title}>{title}</div>
       <div className={style.subTitle}>{subTitle}</div>

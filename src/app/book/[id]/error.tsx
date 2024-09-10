@@ -23,7 +23,7 @@ const Error = ({ error, reset }: { error: Error; reset: () => void }) => {
     <div>
       <h3>오류가 발생했습니다.</h3>
       {/* //* 다시 시도 버튼을 누르면 reset 함수가 실행되면서 페이지를 다시 렌더링 시킨다. */}
-      <button onClick={() => reset()}>다시 시도</button>
+      {/* <button onClick={() => reset()}>다시 시도</button> */}
       {/** 별로 안좋은 방법 */}
       {/* <button onClick={() => window.location.reload()}>다시 시도</button>{" "} */}
       <button
