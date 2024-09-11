@@ -16,7 +16,7 @@ export const createReviewAction = async (_: any, formData: FormData) => {
 
   try {
     const response = await fetch(
-      `${process.env.NEXT_PUBLIC_API_SERVER_URL}/review/1`,
+      `${process.env.NEXT_PUBLIC_API_SERVER_URL}/review`,
       {
         method: "POST",
         headers: {
