@@ -6,6 +6,7 @@ import { delay } from "@/util/delay";
 import { Suspense } from "react";
 import BookItemSkeleton from "@/components/\bskeleton/book-item-skeleton";
 import BookListSkeleton from "@/components/\bskeleton/book-list-skeleton";
+import { Metadata } from "next";
 
 //* 특정 페이지의 유형을 강제로 Static , Dynamic 페이지로 설정
 //* 1. auto : 기본값, 아무것도 강제하지 않음
@@ -69,6 +70,19 @@ const RecoBooks = async () => {
 //? 서스펜스 스트리밍의 진가를 알아보자!
 //? 우선 스트리밍을 적용시키기 위해서는 다이나믹 페이지로 바꿔줘야한다.
 const dynamic = "force-dynamic"; // 해당 index페이지는 강제로 다이나믹 페이지로 변경됨
+
+//* 메타데이터 설정
+//* 동적인 데이터가 필요하지 않은 경우에는 const metadata를 export로 내보내어 사용 (정해진 규칙)
+export const metadata: Metadata = {
+  title: "개발자 도서 추천",
+  description: "개발자 도서 추천에 등록된 도서를 만나보세요!",
+  //? openGraph는 카톡 같은데 공유 시 보여지는 미리보기 이미지, 제목, 설명 등을 설정할 수 있다.
+  openGraph: {
+    title: "개발자 도서 추천",
+    description: "개발자 도서 추천에 등록된 도서를 만나보세요!",
+    images: ["/thumbnail.png"],
+  },
+};
 
 export default function Home() {
   return (

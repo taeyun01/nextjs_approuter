@@ -2,6 +2,7 @@ import BookListSkeleton from "@/components/\bskeleton/book-list-skeleton";
 import BookItem from "@/components/book-item";
 import { BookData } from "@/types";
 import { delay } from "@/util/delay";
+import { Metadata } from "next";
 import { Suspense } from "react";
 
 const SearchResult = async ({ q }: { q: string }) => {
@@ -26,17 +27,31 @@ const SearchResult = async ({ q }: { q: string }) => {
   );
 };
 
+type SearchProps = {
+  searchParams: {
+    q?: string;
+  };
+};
+
+//* 검색어 같은 동적인 값을 통해서 메타데이터를 설정해야하는 상황에서는 정적인 const metadata를 사용하지 않고 함수(generateMetadata)를 사용해서 동적으로 설정해줘야한다.
+//* generateMetadata()를 사용 -> 동적으로 현재 페이지의 메타데이터를 설정, 페이지컴포넌트와 동일한 Props를 전달받는 특징을 가지고 있음
+export const generateMetadata = ({ searchParams }: SearchProps): Metadata => {
+  return {
+    title: ` 검색 결과: ${searchParams.q}`,
+    description: `"${searchParams.q}"에 대한 검색 결과입니다.`,
+    openGraph: {
+      title: ` 검색 결과: ${searchParams.q}`,
+      description: `"${searchParams.q}"에 대한 검색 결과입니다.`,
+      images: ["/thumbnail.png"],
+    },
+  };
+};
+
 //* 검색 페이지는 searchParams라는 쿼리스트링을 보관하는 이러한 Props를 받고 있다. 동적함수를 사용하고 있기때문에 다이나믹 페이지로 설정돼있다.
 //* 스태틱 페이지로 설정하려면 동적함수를 사용하지 못하도록 해야하는데 그러면 쿼리스트링을 사용하지 못하니 그렇게 할 수는 없다.
 //* 이렇게 검색페이지 처럼 실시간으로 사용자의 검색어를 기반으로 어떠한 데이터를 백엔드 서버에서 부터 불러와 렌더링해줘야 하는 페이지는 스태틱으로 설정할 수 없다.
 //* 그래도 조금이라도 설정하고 싶다면, 데이터 캐시를 활용하여 설정하면 된다.
-export default function Page({
-  searchParams,
-}: {
-  searchParams: {
-    q?: string;
-  };
-}) {
+export default function Page({ searchParams }: SearchProps) {
   return (
     // fallback = 대체재, 보완책 (대체 UI로 로딩을 보여줌)
     // key값이 변경되면 서스펜스 스트리밍이 시작된다.(검색어가 변경되면 시작.)
