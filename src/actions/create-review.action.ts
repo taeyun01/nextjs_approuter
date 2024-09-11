@@ -1,11 +1,8 @@
 "use server";
 
-import { delay } from "@/util/delay";
-import { revalidatePath, revalidateTag } from "next/cache";
+import { revalidateTag } from "next/cache";
 
-// 서버액션을 통해 리뷰 추가하기
 export const createReviewAction = async (_: any, formData: FormData) => {
-  //* 컴포넌트의 Props로 부터 bookId값을 전달 받을 수 없기 때문에 formData통해서 함께 전달 받도록 한다.
   const bookId = formData.get("bookId")?.toString();
   const content = formData.get("content")?.toString();
   const author = formData.get("author")?.toString();
@@ -18,7 +15,6 @@ export const createReviewAction = async (_: any, formData: FormData) => {
   }
 
   try {
-    await delay(2000);
     const response = await fetch(
       `${process.env.NEXT_PUBLIC_API_SERVER_URL}/review/1`,
       {
@@ -29,16 +25,13 @@ export const createReviewAction = async (_: any, formData: FormData) => {
         body: JSON.stringify({ bookId, content, author }),
       }
     );
-    //* 리뷰 액션이 성공적으로 완료되면 그때 리뷰 목록을 서버측에서 다시 한번 페이지를 렌더링 해주자
-    console.log(response.status);
-    // revalidatePath(`/book/${bookId}`); // next서버측에 해당 경로에 해당하는 페이지를 다시 생성할 것을 요청하는 (재검증을 요청하는) 그런 함수(메서드)이다.
 
-    //* 서버 액션이 실패하면 에러 핸들링 처리 useActionState의 state값으로 들어감
     if (!response.ok)
       throw new Error(
         `서버 액션이 실패할 시 에러핸들링 ${response.statusText}`
       );
 
+    //* 리뷰 액션이 성공적으로 완료되면 그때 리뷰 목록을 서버측에서 다시 한번 페이지를 렌더링 해주자
     revalidateTag(`review-${bookId}`); // 오직 이 태그값을 갖고있는 fetch메서드의 데이터 캐시만 삭제되어 위 방식보다 효율적임
   } catch (error) {
     return {
@@ -47,6 +40,56 @@ export const createReviewAction = async (_: any, formData: FormData) => {
     };
   }
 };
+
+// "use server";
+
+// import { delay } from "@/util/delay";
+// import { revalidatePath, revalidateTag } from "next/cache";
+
+// // 서버액션을 통해 리뷰 추가하기
+// export const createReviewAction = async (_: any, formData: FormData) => {
+//   //* 컴포넌트의 Props로 부터 bookId값을 전달 받을 수 없기 때문에 formData통해서 함께 전달 받도록 한다.
+//   const bookId = formData.get("bookId")?.toString();
+//   const content = formData.get("content")?.toString();
+//   const author = formData.get("author")?.toString();
+
+//   if (!bookId || !content || !author) {
+//     return {
+//       status: "error",
+//       error: "리뷰 내용과 작성자를 입력해주세요",
+//     };
+//   }
+
+//   try {
+//     await delay(2000);
+//     const response = await fetch(
+//       `${process.env.NEXT_PUBLIC_API_SERVER_URL}/review/1`,
+//       {
+//         method: "POST",
+//         headers: {
+//           "Content-Type": "application/json",
+//         },
+//         body: JSON.stringify({ bookId, content, author }),
+//       }
+//     );
+//     //* 리뷰 액션이 성공적으로 완료되면 그때 리뷰 목록을 서버측에서 다시 한번 페이지를 렌더링 해주자
+//     console.log(response.status);
+//     // revalidatePath(`/book/${bookId}`); // next서버측에 해당 경로에 해당하는 페이지를 다시 생성할 것을 요청하는 (재검증을 요청하는) 그런 함수(메서드)이다.
+
+//     //* 서버 액션이 실패하면 에러 핸들링 처리 useActionState의 state값으로 들어감
+//     if (!response.ok)
+//       throw new Error(
+//         `서버 액션이 실패할 시 에러핸들링 ${response.statusText}`
+//       );
+
+//     revalidateTag(`review-${bookId}`); // 오직 이 태그값을 갖고있는 fetch메서드의 데이터 캐시만 삭제되어 위 방식보다 효율적임
+//   } catch (error) {
+//     return {
+//       status: false,
+//       error: `리뷰 작성에 실패했습니다 : ${error}`,
+//     };
+//   }
+// };
 
 //! 주의할점 : 1. revalidatePath()는 서버에서만 호출가능
 //!        : 2. 해당 경로에 해당하는 페이지를 전부 재검증 시켜버리는 기능이기 때문에 이 페이지에 포함된 모든 캐시들 까지도 전부 무효화 시켜버리게됨
@@ -62,12 +105,4 @@ export const createReviewAction = async (_: any, formData: FormData) => {
  *  3. 특정 레이아웃을 갖는 모든 페이지 재검증 -> revalidatePath("/(with-searchbar", "page");
  *  4. 모든 데이터 재검증 -> revalidatePath("/", "layout");  모든 페이지들이 한꺼번에 재검증
  *  5. 태그 기준, 테이터 캐시를 재검증 -> revalidateTag("tag"); 오직 이 태그값을 갖고있는 fetch메서드의 데이터 캐시만 삭제되어 1번째 방식보다 효율적임.
- *
- *
- *
- *
- *
- *
- *
- *
  */
